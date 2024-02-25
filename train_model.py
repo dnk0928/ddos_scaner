@@ -1,17 +1,14 @@
-# import tensorflow as tf
 from tensorflow.keras.models import Sequential, save_model
 from tensorflow.keras.layers import Dense, Dropout, BatchNormalization
 from sklearn.model_selection import train_test_split
-# from sklearn.preprocessing import LabelEncoder, OneHotEncoder, StandardScaler
-from tensorflow.keras.callbacks import EarlyStopping
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
 from keras.utils import to_categorical
 
-
 # Загрузка данных из CSV-файла
 data = pd.read_csv('learn_data/com_att3.csv')
+
 
 # Объединение столбцов
 def combine_lists(row):
@@ -23,8 +20,10 @@ def combine_lists(row):
 
 
 data['combined_list'] = data.apply(combine_lists, axis=1)
-X = pd.DataFrame(data['combined_list'].apply(lambda x: [i for i in x]).tolist(), columns=[f'feature_{i}' for i in range(len(data['combined_list'].iloc[0]))])
-y = pd.DataFrame(to_categorical(data['attack_type'], num_classes=4, dtype='int'), columns=[f'Class_{i}' for i in range(4)])
+X = pd.DataFrame(data['combined_list'].apply(lambda x: [i for i in x]).tolist(),
+                 columns=[f'feature_{i}' for i in range(len(data['combined_list'].iloc[0]))])
+y = pd.DataFrame(to_categorical(data['attack_type'], num_classes=4, dtype='int'),
+                 columns=[f'Class_{i}' for i in range(4)])
 
 
 # Разделение данных
@@ -56,17 +55,14 @@ model.add(Dense(84, activation='relu'))
 model.add(BatchNormalization())
 model.add(Dropout(0.5))
 
-model.add(Dense(y_test.shape[1], activation='softmax'))  # Многоклассовая классификация
+model.add(Dense(y_test.shape[1], activation='softmax'))
 
 # # Компиляция модели
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-# early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
-# Обучение модели с использованием ранней остановки
 history = model.fit(X_train, y_train, epochs=30, batch_size=32, validation_data=(X_test, y_test))
-# , callbacks=[early_stopping]
 
-# График_точности_модели
+# График точности модели
 plt.figure(figsize=(12, 4))
 
 plt.subplot(1, 2, 1)
@@ -93,5 +89,3 @@ plt.show()
 loss, accuracy = model.evaluate(X_test, y_test)
 print(f"Точность на тестовом наборе данных: {accuracy * 100:.2f}%")
 model.save('model1.keras')
-
-
